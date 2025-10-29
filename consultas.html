@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dog Hospital - QR de Mascotas</title>
+  <script src="qrcodejs-master/qrcode.min.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: max-content;
+      background: linear-gradient(120deg, #013129 100%);
+      color: white;
+      transition: background 0.5s ease, color 0.5s ease;
+      overflow: hidden;
+    }
+
+    body.day {
+      background: linear-gradient(120deg, rgb(11, 153, 136) 100%);
+      color: #013129;
+    }
+
+    .icon-dog-left, .icon-dog-right {
+      position: absolute;
+      top: 1rem;
+      width: 3rem;
+      height: 3rem;
+      background-size: contain;
+      background-repeat: no-repeat;
+      transition: transform 0.8s ease;
+    }
+
+    .icon-dog-left { 
+      left: 1rem; 
+      background-image: url("modo_oscuro.PNG"); 
+    }
+
+    .icon-dog-right { 
+      right: 1rem; 
+      background-image: url("modo_oscuro.PNG"); 
+    }
+
+    /* Cuando el cuerpo tenga la clase .day, cambia a las imágenes de día */
+    body.day .icon-dog-left { 
+      background-image: url("modo_claro.PNG"); 
+    }
+
+    body.day .icon-dog-right { 
+      background-image: url("modo_claro.PNG"); 
+    }
+
+    .rotate { 
+      transform: rotate(360deg); 
+    }
+
+    /* ======= Barras laterales ======= */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 5rem;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.15);
+      padding: 1rem 0;
+      gap: 3rem;
+    }
+
+    .sidebar.left { 
+      border-right: 0.125rem solid rgba(255, 255, 255, 0.2); 
+    }
+
+    .sidebar.right { 
+      border-left: 0.125rem solid rgba(255, 255, 255, 0.2); 
+    }
+
+    .sidebar img {
+      width: 3rem;
+      height: 3rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .sidebar img:hover {
+      transform: scale(1.1);
+      opacity: 0.8;
+    }
+
+    /* === Botones modo día/noche === */
+    .mode-toggle {
+      position: absolute;
+      bottom: 1rem;
+      left: 1rem;
+      right: 1rem;
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .mode-btn {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      pointer-events: auto;
+      background-size: cover;
+      background-color: transparent;
+      transition: transform 0.3s ease;
+    }
+
+    .mode-btn:hover {
+      transform: scale(1.15);
+    }
+
+    .sun:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 1rem 1rem rgb(11, 153, 136);
+      background-color: rgb(11, 153, 136);
+      border: 0.125rem solid rgb(165, 157, 0);
+    }
+    
+    .moon:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 1rem 1rem #013129;
+      background-color: #013129;
+      border: 0.125rem solid #000351;
+    }
+    
+    .moon {
+      background-image: url("https://cdn-icons-png.flaticon.com/512/581/581601.png");
+    }
+
+    .sun {
+      background-image: url("https://cdn-icons-png.flaticon.com/512/869/869869.png");
+    }
+
+    .navegacion {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 2rem;
+      margin-top: 1.2rem;
+    }
+
+    .navegacion button {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      border-radius: 50%;
+      width: 2.5rem;
+      height: 2.5rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .navegacion button:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    /* 📱 Responsive */
+    @media (max-width: 768px) {
+      body { flex-direction: column; overflow-y: auto; }
+      .sidebar { flex-direction: row; width: 100%; height: auto; border: none; gap: 2rem; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="icon-dog-left"></div>
+  <div class="icon-dog-right"></div>
+
+  <!-- Panel lateral izquierdo -->
+  <div class="sidebar left">
+    <a href="consultas.html"><img src="consultas.png" alt="Consultas"></a>
+    <a href="qr_recoleccion.html"><img src="QR-DOG-HOSPITAL-463451.png" alt="QR y Código"></a>
+  </div>
+
+  <!-- 🔆 Botones de modo -->
+      <div class="mode-toggle">
+        <button class="mode-btn moon" id="night-mode" title="Modo noche"></button>
+        <button class="mode-btn sun" id="day-mode" title="Modo día"></button>
+      </div>
+
+  <!-- Contenedor principal -->
+
+    <div class="navegacion">
+      <button id="prev">&#8592;</button>
+      <button id="next">&#8594;</button>
+    </div>
+
+  <!-- Panel lateral derecho -->
+  <div class="sidebar right">
+    <a href="perfil.html"><img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" alt="Perfil"></a>
+    <a href="mascotas.html"><img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Mascotas"></a>
+    <a href="index.html"><img src="https://cdn-icons-png.flaticon.com/512/1828/1828490.png" alt="Cerrar Sesión"></a>
+  </div>
+
+  <script>
+      const body = document.body;
+      const usuarioActivo = JSON.parse(localStorage.getItem("usuarioActivo"));
+      const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+      const dayBtn = document.getElementById("day-mode");
+      const nightBtn = document.getElementById("night-mode");
+      const iconLeft = document.querySelector(".icon-dog-left");
+      const iconRight = document.querySelector(".icon-dog-right");
+
+      const btnPrev = document.getElementById("prev");
+      const btnNext = document.getElementById("next");
+      let indiceActual = 0;
+
+    // ✅ Cambiar modo
+    dayBtn.addEventListener("click", () => {
+      body.classList.add("day");
+      localStorage.setItem("themeMode", "day");
+      rotateIcons();
+    });
+
+    nightBtn.addEventListener("click", () => {
+      body.classList.remove("day");
+      localStorage.setItem("themeMode", "night");
+      rotateIcons();
+    });
+    
+    // ✅ Aplicar modo guardado
+    const savedMode = localStorage.getItem("themeMode");
+    if (savedMode === "day") body.classList.add("day");
+    
+    function rotateIcons() {
+      iconLeft.classList.add("rotate");
+      iconRight.classList.add("rotate");
+
+      setTimeout(() => {
+        iconLeft.classList.remove("rotate");
+        iconRight.classList.remove("rotate");
+      }, 800);
+    } 
+
+    // Navegación
+      btnPrev.addEventListener("click", () => {
+        indiceActual = (indiceActual - 1 + mascotasConQR.length) % mascotasConQR.length;
+        mostrarQR(indiceActual);
+      });
+
+      btnNext.addEventListener("click", () => {
+        indiceActual = (indiceActual + 1) % mascotasConQR.length;
+        mostrarQR(indiceActual);
+      });
+  </script>
+</body>
+</html>
